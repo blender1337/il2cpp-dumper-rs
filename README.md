@@ -30,22 +30,19 @@ Fast, cross-platform static Unity IL2CPP metadata and binary dumper written in R
 - **Ready-to-Use Outputs:** `dump.cs`, padded C/C++ `il2cpp.h` (unique struct names, C/C++ keyword escaping, sequential open generics, `stdint.h` primitives), `script.json` (`ScriptMethod` with full C signatures, `ScriptString`, `ScriptMetadata`), and standalone `ida_import.py` (`SN_FORCE`) + `ghidra_import.py`.
 - **Native Desktop GUI (`egui`):** Emerald / Violet themes, drag-and-drop packages/binaries, virtualized **Class Explorer** with C++ `#define`/`constexpr` copy, **Diff Updater** (`dump` v1 vs v2), and **Profile Builder** (XOR key, header shift, custom magic).
 
-## Feature Comparison
+## Support Matrix
 
-| Feature | il2cpp-dumper-rs | Perfare/Il2CppDumper |
+| Capability | Details | Status |
 | :--- | :--- | :--- |
-| Runtime dependency | Standalone native binary | Requires .NET runtime |
-| Unity 6 (`v35-v39` / variable-width) | Supported | Stops at `v31` |
-| Legacy Unity (`v16-v24.1`) | Supported | Supported |
-| Custom / forked chain-header metadata | Adaptive Engine + JSON Profiles | Requires source edits |
-| Direct `.apk` / `.xapk` / `.apks` / `.ipa` | Supported (in-memory) | Manual extraction |
-| Stripped ELF (`sstrip` / `PT_DYNAMIC` + `DT_RELR`) | Supported | Section headers required |
-| Mach-O `LC_DYLD_CHAINED_FIXUPS` | Decoded natively | Partial / manual rebase |
-| Switch (`NSO0`) & WebGL (`.wasm`) | Supported | Supported |
-| Memory dump with custom base VA | `--memory-dump` + `--image-base` | Supported |
-| Padded C/C++ `il2cpp.h` & `ida/ghidra` scripts | Supported | Supported |
-| Built-in GUI, Class Explorer & Patch Diff | Built-in (`egui`) | Separate third-party tools |
-| `DummyDll/*.dll` for dnSpy/ILSpy | Roadmap | Supported |
+| Runtime | Standalone native binary (zero external runtime) | Supported |
+| Unity Metadata | Legacy `v16-v24.1`, standard `v24.2-v31`, Unity 6 `v35-v39` / variable-width | Supported |
+| Custom / Forked Metadata | Adaptive chain-header engine + JSON `--profile` (XOR, shift, magic) | Supported |
+| Mobile Packages | Direct in-memory `.apk`, `.xapk`, `.apks`, `.ipa` extraction | Supported |
+| Binary Formats | ELF (`DT_RELR`, stripped `PT_DYNAMIC`), PE (`.CRT$XCU`), Mach-O (`LC_DYLD_CHAINED_FIXUPS`), Switch `NSO0`, `.wasm` | Supported |
+| Memory Dumps | Raw dumps via `--memory-dump` and arbitrary `--image-base` rebase | Supported |
+| Codegen & RE Exports | `dump.cs`, padded C/C++ `il2cpp.h`, `script.json`, `ida_import.py`, `ghidra_import.py` | Supported |
+| Desktop Tooling | Built-in `egui` GUI, Class Explorer, Patch Diff Updater, Profile Builder | Supported |
+| `DummyDll/*.dll` | Managed stub assemblies for dnSpy / ILSpy | Planned |
 
 ## Quick Start
 
