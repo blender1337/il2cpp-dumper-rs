@@ -46,6 +46,27 @@ impl GuiTheme {
             GuiTheme::Violet => egui::Color32::from_rgb(56, 40, 88),
         }
     }
+
+    fn input_bg(self) -> egui::Color32 {
+        match self {
+            GuiTheme::Emerald => egui::Color32::from_rgb(8, 12, 10),
+            GuiTheme::Violet => egui::Color32::from_rgb(9, 7, 16),
+        }
+    }
+
+    fn control_bg(self) -> egui::Color32 {
+        match self {
+            GuiTheme::Emerald => egui::Color32::from_rgb(28, 44, 37),
+            GuiTheme::Violet => egui::Color32::from_rgb(34, 26, 56),
+        }
+    }
+
+    fn control_hover(self) -> egui::Color32 {
+        match self {
+            GuiTheme::Emerald => egui::Color32::from_rgb(36, 58, 48),
+            GuiTheme::Violet => egui::Color32::from_rgb(46, 35, 76),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -602,15 +623,16 @@ impl DumperApp {
             .corner_radius(6.0)
             .inner_margin(12.0)
             .show(ui, |ui| {
+                let input_w = (ui.available_width() - 420.0).max(280.0);
                 egui::Grid::new("paths_grid")
                     .num_columns(3)
                     .spacing([8.0, 8.0])
                     .show(ui, |ui| {
                         ui.label("Package (.apk / .xapk / .ipa):");
-                        ui.add(
+                        ui.add_sized(
+                            [input_w, 24.0],
                             egui::TextEdit::singleline(&mut self.package_path)
-                                .hint_text("Optional: drop .apk / .xapk / .apks / .ipa here")
-                                .desired_width(540.0),
+                                .hint_text("Optional: drop .apk / .xapk / .apks / .ipa here"),
                         );
                         ui.horizontal(|ui| {
                             if ui.button("Browse...").clicked() {
@@ -630,7 +652,11 @@ impl DumperApp {
                         ui.end_row();
 
                         ui.label("Binary (.dll / .so / .dylib / .nso / .wasm):");
-                        ui.add(egui::TextEdit::singleline(&mut self.binary_path).desired_width(540.0));
+                        ui.add_sized(
+                            [input_w, 24.0],
+                            egui::TextEdit::singleline(&mut self.binary_path)
+                                .hint_text("Path to libil2cpp.so / GameAssembly.dll / UnityFramework"),
+                        );
                         if ui.button("Browse...").clicked() {
                             if let Some(p) = rfd::FileDialog::new()
                                 .add_filter("Binaries", &["dll", "so", "dylib", "nso", "wasm"])
@@ -642,7 +668,11 @@ impl DumperApp {
                         ui.end_row();
 
                         ui.label("Metadata (.dat):");
-                        ui.add(egui::TextEdit::singleline(&mut self.metadata_path).desired_width(540.0));
+                        ui.add_sized(
+                            [input_w, 24.0],
+                            egui::TextEdit::singleline(&mut self.metadata_path)
+                                .hint_text("Path to global-metadata.dat"),
+                        );
                         if ui.button("Browse...").clicked() {
                             if let Some(p) = rfd::FileDialog::new()
                                 .add_filter("Metadata", &["dat"])
@@ -654,7 +684,10 @@ impl DumperApp {
                         ui.end_row();
 
                         ui.label("Output Folder:");
-                        ui.add(egui::TextEdit::singleline(&mut self.out_dir).desired_width(540.0));
+                        ui.add_sized(
+                            [input_w, 24.0],
+                            egui::TextEdit::singleline(&mut self.out_dir),
+                        );
                         if ui.button("Browse...").clicked() {
                             if let Some(p) = rfd::FileDialog::new().pick_folder() {
                                 self.out_dir = p.to_string_lossy().into_owned();
@@ -663,7 +696,11 @@ impl DumperApp {
                         ui.end_row();
 
                         ui.label("Profile (.json, optional):");
-                        ui.add(egui::TextEdit::singleline(&mut self.profile_path).desired_width(540.0));
+                        ui.add_sized(
+                            [input_w, 24.0],
+                            egui::TextEdit::singleline(&mut self.profile_path)
+                                .hint_text("Optional custom profile JSON"),
+                        );
                         if ui.button("Browse...").clicked() {
                             if let Some(p) = rfd::FileDialog::new()
                                 .add_filter("JSON Profile", &["json"])
@@ -676,19 +713,17 @@ impl DumperApp {
                     });
 
                 ui.add_space(6.0);
-                ui.horizontal(|ui| {
+                ui.horizontal_wrapped(|ui| {
                     ui.label("Manual MetaReg VA:");
-                    ui.add(
-                        egui::TextEdit::singleline(&mut self.meta_reg_hex)
-                            .hint_text("0x...")
-                            .desired_width(120.0),
+                    ui.add_sized(
+                        [110.0, 22.0],
+                        egui::TextEdit::singleline(&mut self.meta_reg_hex).hint_text("0x..."),
                     );
                     ui.add_space(10.0);
                     ui.label("Manual CodeReg VA:");
-                    ui.add(
-                        egui::TextEdit::singleline(&mut self.code_reg_hex)
-                            .hint_text("0x...")
-                            .desired_width(120.0),
+                    ui.add_sized(
+                        [110.0, 22.0],
+                        egui::TextEdit::singleline(&mut self.code_reg_hex).hint_text("0x..."),
                     );
                     ui.add_space(10.0);
                     ui.label("Arch:");
@@ -704,10 +739,9 @@ impl DumperApp {
                     ui.checkbox(&mut self.memory_dump_mode, "Memory Dump (1:1 VA)");
                     ui.add_space(10.0);
                     ui.label("Dump Base VA:");
-                    ui.add(
-                        egui::TextEdit::singleline(&mut self.dump_base_hex)
-                            .hint_text("0x7... (opt)")
-                            .desired_width(110.0),
+                    ui.add_sized(
+                        [110.0, 22.0],
+                        egui::TextEdit::singleline(&mut self.dump_base_hex).hint_text("0x7... (opt)"),
                     );
                 });
 
@@ -805,10 +839,10 @@ impl DumperApp {
                 }
             }
             ui.label("Search:");
-            let resp = ui.add(
+            let resp = ui.add_sized(
+                [280.0, 22.0],
                 egui::TextEdit::singleline(&mut self.explorer_search)
-                    .hint_text("Class, Namespace, Field, Method...")
-                    .desired_width(280.0),
+                    .hint_text("Class, Namespace, Field, Method..."),
             );
             if resp.changed() {
                 self.rebuild_explorer_filter();
@@ -951,12 +985,16 @@ impl DumperApp {
             .corner_radius(6.0)
             .inner_margin(12.0)
             .show(ui, |ui| {
+                let input_w = (ui.available_width() - 280.0).max(320.0);
                 egui::Grid::new("diff_grid")
                     .num_columns(3)
                     .spacing([8.0, 8.0])
                     .show(ui, |ui| {
                         ui.label("Old dump.cs:");
-                        ui.add(egui::TextEdit::singleline(&mut self.diff_old_path).desired_width(560.0));
+                        ui.add_sized(
+                            [input_w, 24.0],
+                            egui::TextEdit::singleline(&mut self.diff_old_path),
+                        );
                         if ui.button("Browse...").clicked() {
                             if let Some(p) = rfd::FileDialog::new()
                                 .add_filter("C# Dump", &["cs"])
@@ -968,7 +1006,10 @@ impl DumperApp {
                         ui.end_row();
 
                         ui.label("New dump.cs:");
-                        ui.add(egui::TextEdit::singleline(&mut self.diff_new_path).desired_width(560.0));
+                        ui.add_sized(
+                            [input_w, 24.0],
+                            egui::TextEdit::singleline(&mut self.diff_new_path),
+                        );
                         if ui.button("Browse...").clicked() {
                             if let Some(p) = rfd::FileDialog::new()
                                 .add_filter("C# Dump", &["cs"])
@@ -980,10 +1021,10 @@ impl DumperApp {
                         ui.end_row();
 
                         ui.label("Class filter (optional):");
-                        ui.add(
+                        ui.add_sized(
+                            [input_w, 24.0],
                             egui::TextEdit::singleline(&mut self.diff_filter)
-                                .hint_text("e.g. BattleManager")
-                                .desired_width(560.0),
+                                .hint_text("e.g. BattleManager"),
                         );
                         ui.label("");
                         ui.end_row();
@@ -1041,39 +1082,43 @@ impl DumperApp {
             .corner_radius(6.0)
             .inner_margin(12.0)
             .show(ui, |ui| {
+                let input_w = (ui.available_width() - 300.0).clamp(320.0, 520.0);
                 egui::Grid::new("prof_grid")
                     .num_columns(2)
                     .spacing([12.0, 8.0])
                     .show(ui, |ui| {
                         ui.label("Profile Name:");
-                        ui.add(egui::TextEdit::singleline(&mut self.prof_name).desired_width(360.0));
+                        ui.add_sized([input_w, 24.0], egui::TextEdit::singleline(&mut self.prof_name));
                         ui.end_row();
 
                         ui.label("Header Offset (bytes):");
-                        ui.add(egui::TextEdit::singleline(&mut self.prof_header_offset).desired_width(360.0));
+                        ui.add_sized(
+                            [input_w, 24.0],
+                            egui::TextEdit::singleline(&mut self.prof_header_offset),
+                        );
                         ui.end_row();
 
                         ui.label("XOR Key (hex, optional):");
-                        ui.add(
+                        ui.add_sized(
+                            [input_w, 24.0],
                             egui::TextEdit::singleline(&mut self.prof_xor_key)
-                                .hint_text("e.g. 5AA5")
-                                .desired_width(360.0),
+                                .hint_text("e.g. 5AA5"),
                         );
                         ui.end_row();
 
                         ui.label("Expected Custom Magic (hex, optional):");
-                        ui.add(
+                        ui.add_sized(
+                            [input_w, 24.0],
                             egui::TextEdit::singleline(&mut self.prof_expected_magic)
-                                .hint_text("e.g. 0x12345678")
-                                .desired_width(360.0),
+                                .hint_text("e.g. 0x12345678"),
                         );
                         ui.end_row();
 
                         ui.label("Override Version (optional):");
-                        ui.add(
+                        ui.add_sized(
+                            [input_w, 24.0],
                             egui::TextEdit::singleline(&mut self.prof_override_version)
-                                .hint_text("e.g. 29 or 1024")
-                                .desired_width(360.0),
+                                .hint_text("e.g. 29 or 1024"),
                         );
                         ui.end_row();
 
@@ -1092,9 +1137,9 @@ impl DumperApp {
                         ui.end_row();
 
                         ui.label("Register Symbol (Adaptive ELF):");
-                        ui.add(
-                            egui::TextEdit::singleline(&mut self.prof_register_symbol)
-                                .desired_width(360.0),
+                        ui.add_sized(
+                            [input_w, 24.0],
+                            egui::TextEdit::singleline(&mut self.prof_register_symbol),
                         );
                         ui.end_row();
                     });
@@ -1251,15 +1296,31 @@ fn apply_theme_visuals(ctx: &egui::Context, theme: GuiTheme) {
     let mut visuals = egui::Visuals::dark();
     let base = theme.base();
     let surface = theme.surface();
+    let border = theme.panel_border();
     let accent = theme.accent();
     visuals.window_fill = base;
     visuals.panel_fill = base;
-    visuals.extreme_bg_color = surface;
+    visuals.extreme_bg_color = theme.input_bg();
     visuals.faint_bg_color = surface;
     visuals.selection.bg_fill = accent.gamma_multiply(0.35);
     visuals.selection.stroke = egui::Stroke::new(1.0_f32, accent);
-    visuals.widgets.inactive.bg_fill = surface;
+
+    visuals.widgets.inactive.bg_fill = theme.control_bg();
+    visuals.widgets.inactive.weak_bg_fill = theme.control_bg();
+    visuals.widgets.inactive.bg_stroke = egui::Stroke::new(1.0_f32, border);
+
+    visuals.widgets.hovered.bg_fill = theme.control_hover();
+    visuals.widgets.hovered.weak_bg_fill = theme.control_hover();
     visuals.widgets.hovered.bg_stroke = egui::Stroke::new(1.0_f32, accent);
+
+    visuals.widgets.active.bg_fill = theme.control_hover();
+    visuals.widgets.active.weak_bg_fill = theme.control_hover();
+    visuals.widgets.active.bg_stroke = egui::Stroke::new(1.2_f32, accent);
+
+    visuals.widgets.open.bg_fill = theme.control_bg();
+    visuals.widgets.open.weak_bg_fill = theme.control_bg();
+    visuals.widgets.open.bg_stroke = egui::Stroke::new(1.0_f32, accent);
+
     ctx.set_visuals(visuals);
 }
 

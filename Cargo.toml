@@ -1,6 +1,6 @@
 [package]
 name = "il2cpp-dumper-rs"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 license = "MIT"
 description = "Fast, cross-platform static Unity IL2CPP metadata & binary dumper in Rust (v16-v39 + adaptive layouts, PE/ELF/Mach-O/NSO/WASM, APK/XAPK/IPA, GUI & Diff)"

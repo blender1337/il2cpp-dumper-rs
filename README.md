@@ -6,6 +6,17 @@
 
 Fast, cross-platform static Unity IL2CPP metadata and binary dumper written in Rust. Works without launching the target runtime or installing .NET/Mono, supporting legacy Unity (`v16`) through **Unity 6 (`v39` / `v104+`)** as well as custom forked builds.
 
+![il2cpp-dumper-rs Desktop GUI (Emerald Theme)](docs/gui-emerald.png)
+
+<details>
+<summary>More screenshots (Violet theme &amp; Profile Builder)</summary>
+
+![il2cpp-dumper-rs Desktop GUI (Violet Theme)](docs/gui-violet.png)
+
+![il2cpp-dumper-rs Profile Builder](docs/gui-profile.png)
+
+</details>
+
 ## Highlights
 
 - **Wide Unity Version Coverage:** Legacy `v16-v24.1` (flat `methodPointers[]`), standard `v24.2-v31`, **Unity 6 (`v35-v39`, `v104+`)** with variable-width metadata indices, plus an **Adaptive Engine** (`v200+` / chain-header layouts).
